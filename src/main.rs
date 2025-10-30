@@ -31,7 +31,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
     //, not taking ownership just looking at the data
     let file_path = &args[1];
 
-    //reading the file and storing the ascii characters 
+    //reading the file's raw bytes and storing as a vector of numbers
     // the ? is like an if else statement. if fs::read successfully reads. ? will allow the data to be stored
     // if fs::read fails, it will return Err(the_error). The ? will see this and return it to our main function.
     let file_bytes = fs::read(file_path)?;
@@ -39,10 +39,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
     //creates an empty mutable sha256 object 
     let mut hasher = Sha256::new();
 
-    //hashes the bytes using SHA256 algorithm into an array of numbers
+    //the hasher object is accessing the contents by reference and 
+    //writing the contents of file_bytes onto the hasher object
     hasher.update(&file_bytes);   
 
-    //stores the array of numbers in an UN-mutable variable
+    //stores an array of 32 hashed bytes
     let hash_bytes = hasher.finalize();
 
     println!("\nFile:     {}", file_path);
@@ -51,7 +52,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
     //at the moment hash_bytes holds an array of 32 numbers not a readable string
     //the hex::encode function will translate the 32 bytes 
     //into two character hexadecimal digits and output to a readable string
-    println!("SHA256:   {}\n ",hex::encode(hash_bytes) );
+    println!("SHA256:   {}",hex::encode(hash_bytes) );
+    println!();
 
     //returns to main showing the result of the program (successful)
     Ok(())
